@@ -3,5 +3,6 @@
   "version": "2.0.0",
   "author": "can-dy-jack",
   "license": "CC-BY-4.0",
-  "main": "./lib/inde.js"
+  "main": "./lib/inde.js",
+  "type": "module"
 }
