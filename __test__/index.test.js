@@ -1,15 +1,16 @@
-const {
-  tokenizer,
-  parser,
-  transformer,
-  codeGenerator,
-  compiler,
-} = require('./the-super-tiny-compiler');
-const assert = require('assert');
+import {
+	tokenizer,
+	parser,
+	traverser,
+	transformer,
+	codeGenerator,
+	compiler
+} from "../lib/index.js";
+import assert from 'node:assert/strict';
+import print from "./print.js";
 
 const input  = '(add 2 (subtract 4 2))';
 const output = 'add(2, subtract(4, 2));';
-
 const tokens = [
   { type: 'paren',  value: '('        },
   { type: 'name',   value: 'add'      },
@@ -21,8 +22,7 @@ const tokens = [
   { type: 'paren',  value: ')'        },
   { type: 'paren',  value: ')'        }
 ];
-
-const ast = {
+const AST = {
   type: 'Program',
   body: [{
     type: 'CallExpression',
@@ -43,8 +43,7 @@ const ast = {
     }]
   }]
 };
-
-const newAst = {
+const targetAST = {
   type: 'Program',
   body: [{
     type: 'ExpressionStatement',
@@ -75,10 +74,48 @@ const newAst = {
   }]
 };
 
-assert.deepStrictEqual(tokenizer(input), tokens, 'Tokenizer should turn `input` string into `tokens` array');
-assert.deepStrictEqual(parser(tokens), ast, 'Parser should turn `tokens` array into `ast`');
-assert.deepStrictEqual(transformer(ast), newAst, 'Transformer should turn `ast` into a `newAst`');
-assert.deepStrictEqual(codeGenerator(newAst), output, 'Code Generator should turn `newAst` into `output` string');
-assert.deepStrictEqual(compiler(input), output, 'Compiler should turn `input` into `output`');
 
-console.log('All Passed!');
+function test_part(func, i, o, info) {
+	console.log(`  ${func.name}() test:`);
+	assert.deepStrictEqual(
+		func(i), 
+		o, 
+		info
+	);
+	console.log(`\x1b[32m    √ \x1b[0m \x1b[2m${info}\x1b[0m`);
+}
+/**
+ * Assert
+ */ 
+print.info();
+print.blue("the-super-tiny-compiler tests:");
+
+test_part(
+	tokenizer, 
+	input, tokens, 
+	'Tokenizer should turn `input` string into `tokens` array'
+);
+test_part(
+	parser, 
+	tokens, AST, 
+	'Parser should turn `tokens` array into `ast`'
+);
+test_part(
+	transformer, 
+	AST, targetAST, 
+	'Transformer should turn `ast` into a `targetAST`'
+);
+test_part(
+	codeGenerator, 
+	targetAST, output,
+	'Code Generator should turn `targetAST` into `output` string'
+);
+test_part(
+	compiler, 
+	input, output,
+	'Compiler should turn `input` into `output`'
+);
+
+print.process("test", "100%");
+print.green("All tests are passed!");
+print.info();
