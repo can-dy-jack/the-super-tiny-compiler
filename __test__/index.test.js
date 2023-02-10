@@ -116,6 +116,6 @@ test_part(
 	'Compiler should turn `input` into `output`'
 );
 
-print.green("test [====================================================================] 100%");
+print.process("test", "100%");
 print.green("All tests are passed!");
 print.info();
